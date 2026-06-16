@@ -5,15 +5,15 @@ const state = {
     { user_id: 3001, name: "Admin Raja", email: "admin@coffee.com", password: "adminpass", role: "Admin", phone: "0117654321", registration_date: "2026-06-01T07:45:00" }
   ],
   menu: [
-    { item_id: "ITM001", item_name: "Matcha Latte", category: "Drink", price: 12.00, availability: true, description: "Premium matcha with steamed milk", image: "https://images.unsplash.com/photo-1582787042533-3112bd081a28?w=300&h=200&fit=crop" },
+    { item_id: "ITM001", item_name: "Matcha Latte", category: "Drink", price: 12.00, availability: true, description: "Premium matcha with steamed milk", image: "matcha.jpg" },
     { item_id: "ITM002", item_name: "Classic Latte", category: "Drink", price: 11.00, availability: true, description: "Smooth espresso with steamed milk", image: "https://images.unsplash.com/photo-1551030173-122aabc4489c?w=300&h=200&fit=crop" },
     { item_id: "ITM003", item_name: "Cold Brew", category: "Drink", price: 10.00, availability: true, description: "Slow-brewed coffee with rich flavour", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300&h=200&fit=crop" },
     { item_id: "ITM004", item_name: "Chocolate Muffin", category: "Dessert", price: 8.50, availability: true, description: "Freshly baked muffin with dark chocolate", image: "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=300&h=200&fit=crop" },
-    { item_id: "ITM005", item_name: "Almond Croissant", category: "Food", price: 9.00, availability: false, description: "Flaky pastry with almond filling", image: "https://images.unsplash.com/photo-1549903072-7e3e003eecbc?w=300&h=200&fit=crop" },
+    { item_id: "ITM005", item_name: "Almond Croissant", category: "Food", price: 9.00, availability: false, description: "Flaky pastry with almond filling", image: "croissant.jpg" },
     { item_id: "ITM006", item_name: "Caramel Macchiato", category: "Drink", price: 12.00, availability: true, description: "Smooth espresso with steamed milk and caramel drizzle + cold foam", image: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=300&h=200&fit=crop" }
   ],
   orders: [
-    { order_id: 20260001, customer_id: 1001, order_date: "2026-06-15T09:15:00", total_amount: 36.00, order_status: "Completed", payment_status: "Paid", items: [ { item_id: "ITM001", item_name: "Matcha Latte", quantity: 3, subtotal: 36.00 } ] }
+    { order_id: 20260001, customer_id: 1001, order_date: "2026-06-15T09:15:00", total_amount: 36.00, order_status: "Completed", payment_status: "Paid", items: [{ item_id: "ITM001", item_name: "Matcha Latte", quantity: 3, subtotal: 36.00 }] }
   ],
   payments: [],
   cart: [],
@@ -610,6 +610,7 @@ function renderAdminMenu() {
           <div class="input-group"><label for="new-category">Category</label><input id="new-category" required /></div>
           <div class="input-group"><label for="new-price">Price</label><input id="new-price" type="number" step="0.01" required /></div>
           <div class="input-group"><label for="new-availability">Available</label><select id="new-availability"><option value="true">Yes</option><option value="false">No</option></select></div>
+          <div class="input-group" style="grid-column: span 2;"><label for="new-image">Image URL or Local Filename</label><input id="new-image" placeholder="e.g. matcha.jpg or https://..." /></div>
           <div class="input-group" style="grid-column: span 2;"><label for="new-description">Description</label><textarea id="new-description" rows="3" required></textarea></div>
         </form>
         <button data-action="create-menu-item">Create item</button>
@@ -938,6 +939,7 @@ function handleCreateMenuItem() {
   const category = document.getElementById("new-category").value.trim();
   const price = parseFloat(document.getElementById("new-price").value);
   const availability = document.getElementById("new-availability").value === "true";
+  const image = document.getElementById("new-image").value.trim();
   const description = document.getElementById("new-description").value.trim();
 
   if (!name || !category || Number.isNaN(price) || !description) {
@@ -951,6 +953,7 @@ function handleCreateMenuItem() {
     category,
     price,
     availability,
+    image: image || "https://placehold.co/300x200?text=No+Image",
     description
   };
 
@@ -974,12 +977,15 @@ function handleEditMenuItem(event) {
     setAlert("Invalid price.");
     return;
   }
+  const image = prompt("Image URL/Path:", item.image || "");
+  if (image === null) return;
   const description = prompt("Description:", item.description);
   if (description === null) return;
 
   item.item_name = name;
   item.category = category;
   item.price = price;
+  item.image = image;
   item.description = description;
   saveState();
   setAlert("Menu item updated.");
